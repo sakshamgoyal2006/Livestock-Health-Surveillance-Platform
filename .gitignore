@@ -18,3 +18,9 @@ htmlcov/
 media/
 *.log
 .DS_Store
+
+# Local project specifications
+SIH_26128_master_execution_prompt.md
+SIH_26128_checkpoint_execution_prompts.md
+*.tsbuildinfo
+*.egg-info/
