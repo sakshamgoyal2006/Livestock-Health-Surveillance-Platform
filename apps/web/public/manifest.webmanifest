@@ -1,0 +1,11 @@
+{
+  "name": "Pashu Seva Early Warning",
+  "short_name": "Pashu Seva",
+  "description": "Offline livestock health reporting for veterinary review",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f7f5ed",
+  "theme_color": "#174f43",
+  "lang": "en-IN",
+  "icons": []
+}

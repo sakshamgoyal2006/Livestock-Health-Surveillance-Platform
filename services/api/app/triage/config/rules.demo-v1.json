@@ -1,0 +1,59 @@
+{
+  "rule_set_id": "livestock-red-flags-demo-v1",
+  "version": "rules-demo-1.0.0",
+  "effective_from": "2026-09-01",
+  "provenance": "Synthetic demonstration configuration; not clinically validated",
+  "review": {
+    "status": "DEMO_UNVALIDATED",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  "rules": [
+    {
+      "id": "DEMO_MORTALITY_PRESENT",
+      "priority": 100,
+      "urgency": "EMERGENCY",
+      "all": [{"field": "mortality_count", "operator": "gte", "value": 1}],
+      "reason_code": "MORTALITY_REPORTED",
+      "message": "One or more deaths were reported; urgent veterinary review is required."
+    },
+    {
+      "id": "DEMO_UNABLE_TO_STAND",
+      "priority": 90,
+      "urgency": "EMERGENCY",
+      "all": [{"field": "mobility", "operator": "eq", "value": "UNABLE_TO_STAND"}],
+      "reason_code": "RECUMBENCY_REPORTED",
+      "message": "The animal was reported unable to stand; urgent veterinary review is required."
+    },
+    {
+      "id": "DEMO_SEVERE_BREATHING",
+      "priority": 80,
+      "urgency": "EMERGENCY",
+      "all": [
+        {"field": "severity", "operator": "eq", "value": "SEVERE"},
+        {"field": "respiration", "operator": "in", "value": ["DIFFICULT", "RAPID"]}
+      ],
+      "reason_code": "SEVERE_RESPIRATORY_SIGNS",
+      "message": "Severe breathing signs were reported; urgent veterinary review is required."
+    },
+    {
+      "id": "DEMO_HIGH_TEMPERATURE",
+      "priority": 70,
+      "urgency": "VET_REVIEW",
+      "all": [{"field": "temperature_c", "operator": "gte", "value": 40.5}],
+      "reason_code": "HIGH_TEMPERATURE_REPORTED",
+      "message": "A high measured temperature was reported; veterinary review is recommended."
+    },
+    {
+      "id": "DEMO_NO_INTAKE",
+      "priority": 60,
+      "urgency": "VET_REVIEW",
+      "all": [
+        {"field": "appetite", "operator": "eq", "value": "NONE"},
+        {"field": "water_intake", "operator": "eq", "value": "NONE"}
+      ],
+      "reason_code": "NO_FOOD_OR_WATER",
+      "message": "No food or water intake was reported; veterinary review is recommended."
+    }
+  ]
+}

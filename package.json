@@ -1,0 +1,27 @@
+{
+  "name": "sih-26128-livestock-surveillance",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "packages/contracts",
+    "tests/e2e"
+  ],
+  "scripts": {
+    "dev": "docker compose up --build",
+    "down": "docker compose down",
+    "db:migrate": "docker compose run --rm api alembic upgrade head",
+    "db:seed": "docker compose run --rm api python -m scripts.seed",
+    "contracts:generate": "docker compose run --rm api python -m scripts.export_openapi /contracts/openapi.json",
+    "format:check": "npm --workspace apps/web run format:check && docker compose run --rm api ruff format --check .",
+    "lint": "npm --workspace apps/web run lint && docker compose run --rm api ruff check .",
+    "typecheck": "npm --workspace apps/web run typecheck && npm --workspace tests/e2e run typecheck && docker compose run --rm api mypy app",
+    "test:unit": "npm --workspace apps/web run test && docker compose run --rm api pytest -m 'not integration'",
+    "test:integration": "docker compose run --rm api pytest -m integration",
+    "test:e2e": "npm --workspace tests/e2e run test",
+    "validate": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate.ps1"
+  },
+  "engines": {
+    "node": ">=20.9"
+  }
+}

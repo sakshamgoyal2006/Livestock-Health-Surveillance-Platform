@@ -1,0 +1,120 @@
+{
+  "calibration_bins": "NOT_ESTIMATED_TEST_SET_TOO_SMALL",
+  "calibration_status": "DEMO_UNVALIDATED",
+  "confusion_matrix": {
+    "EMERGENCY": {
+      "EMERGENCY": 1,
+      "LOW": 0,
+      "VET_REVIEW": 1
+    },
+    "LOW": {
+      "EMERGENCY": 0,
+      "LOW": 2,
+      "VET_REVIEW": 0
+    },
+    "VET_REVIEW": {
+      "EMERGENCY": 0,
+      "LOW": 0,
+      "VET_REVIEW": 2
+    }
+  },
+  "dataset_provenance": "ml/risk/data/synthetic_cp2.csv; 24 authored synthetic rows",
+  "emergency_false_negative_rate": 0.5,
+  "emergency_sensitivity": 0.5,
+  "model_version": "interpretable-risk-demo-1.0.0",
+  "multiclass_brier_score": 0.462228,
+  "oversampling": "NOT_USED",
+  "per_class": {
+    "EMERGENCY": {
+      "f1": 0.666667,
+      "precision": 1.0,
+      "recall": 0.5
+    },
+    "LOW": {
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "VET_REVIEW": {
+      "f1": 0.8,
+      "precision": 0.666667,
+      "recall": 1.0
+    }
+  },
+  "pr_curve_emergency": [
+    {
+      "false_negatives": 1,
+      "precision": 1.0,
+      "recall": 0.5,
+      "threshold": 0.2
+    },
+    {
+      "false_negatives": 1,
+      "precision": 1.0,
+      "recall": 0.5,
+      "threshold": 0.35
+    },
+    {
+      "false_negatives": 2,
+      "precision": null,
+      "recall": 0.0,
+      "threshold": 0.5
+    },
+    {
+      "false_negatives": 2,
+      "precision": null,
+      "recall": 0.0,
+      "threshold": 0.65
+    }
+  ],
+  "subgroup_checks": {
+    "BUFFALO": {
+      "correct": 2,
+      "count": 2
+    },
+    "CATTLE": {
+      "correct": 3,
+      "count": 4
+    }
+  },
+  "test_split": {
+    "group_overlap_with_train_or_calibration": false,
+    "groups": [
+      "FARM_G",
+      "FARM_H"
+    ],
+    "rows": 6,
+    "temporal_period": [
+      "2026-03-01T08:00:00Z",
+      "2026-03-12T08:00:00Z"
+    ]
+  },
+  "threshold_analysis": [
+    {
+      "false_negatives": 1,
+      "precision": 1.0,
+      "recall": 0.5,
+      "threshold": 0.2
+    },
+    {
+      "false_negatives": 1,
+      "precision": 1.0,
+      "recall": 0.5,
+      "threshold": 0.35
+    },
+    {
+      "false_negatives": 2,
+      "precision": null,
+      "recall": 0.0,
+      "threshold": 0.5
+    },
+    {
+      "false_negatives": 2,
+      "precision": null,
+      "recall": 0.0,
+      "threshold": 0.65
+    }
+  ],
+  "tree_candidate": "BLOCKED_NO_AUTHORIZED_CLINICAL_DATA",
+  "warning": "SYNTHETIC DEMO METRICS ONLY; not clinical performance or validation"
+}

@@ -1,0 +1,37 @@
+from __future__ import annotations
+
+import logging
+from typing import Any
+
+from pythonjsonlogger.json import JsonFormatter
+
+REDACTED_KEYS = {"authorization", "password", "auth_secret", "token", "voice_transcript", "notes"}
+
+
+class RedactingFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        for key in REDACTED_KEYS:
+            if hasattr(record, key):
+                setattr(record, key, "[REDACTED]")
+        if isinstance(record.args, dict):
+            record.args = {
+                key: "[REDACTED]" if key.lower() in REDACTED_KEYS else value
+                for key, value in record.args.items()
+            }
+        return True
+
+
+def configure_logging(level: str) -> None:
+    handler = logging.StreamHandler()
+    handler.setFormatter(JsonFormatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
+    handler.addFilter(RedactingFilter())
+    root = logging.getLogger()
+    root.handlers = [handler]
+    root.setLevel(level.upper())
+
+
+def safe_log_context(**values: Any) -> dict[str, Any]:
+    return {
+        key: "[REDACTED]" if key.lower() in REDACTED_KEYS else value
+        for key, value in values.items()
+    }

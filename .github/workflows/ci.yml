@@ -1,0 +1,33 @@
+name: checkpoint-1
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm --workspace apps/web run format:check
+      - run: npm --workspace apps/web run lint
+      - run: npm --workspace apps/web run typecheck
+      - run: npm --workspace tests/e2e run typecheck
+      - run: npm --workspace apps/web run test
+      - run: docker compose build api
+      - run: docker compose up -d db
+      - run: docker compose run --rm api alembic upgrade head
+      - run: docker compose run --rm api python -m scripts.seed
+      - run: docker compose run --rm api ruff format --check .
+      - run: docker compose run --rm api ruff check .
+      - run: docker compose run --rm api mypy app
+      - run: docker compose run --rm api pytest
+      - run: docker compose up -d api web
+      - run: npx playwright install --with-deps chromium
+      - run: npm --workspace tests/e2e run test

@@ -1,0 +1,61 @@
+name: sih-26128
+
+services:
+  db:
+    image: postgis/postgis:17-3.6-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sih}
+      POSTGRES_USER: ${POSTGRES_USER:-sih}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-development-only}
+    ports:
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: services/api
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://sih:change-me-development-only@db:5432/sih}
+      DEV_AUTH_ENABLED: ${DEV_AUTH_ENABLED:-true}
+      AUTH_SECRET: ${AUTH_SECRET:-development-only-secret-change-before-use}
+      ACCESS_TOKEN_TTL_MINUTES: ${ACCESS_TOKEN_TTL_MINUTES:-480}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      COMPOSE_FILE_UNDER_TEST: /workspace/docker-compose.yml
+    ports:
+      - "${API_HOST_PORT:-8000}:8000"
+    volumes:
+      - ./packages/contracts:/contracts
+      - ./docker-compose.yml:/workspace/docker-compose.yml:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["sh", "-c", "alembic upgrade head && python -m scripts.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    ports:
+      - "${WEB_HOST_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

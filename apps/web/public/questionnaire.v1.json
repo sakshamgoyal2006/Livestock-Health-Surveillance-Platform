@@ -1,0 +1,19 @@
+{
+  "version": "CP1-1",
+  "species": ["CATTLE", "BUFFALO"],
+  "fields": [
+    "severity",
+    "appetite",
+    "water_intake",
+    "mobility",
+    "respiration",
+    "visible_lesions",
+    "discharge",
+    "temperature_c",
+    "vaccination_status",
+    "recent_movement",
+    "recent_contact",
+    "mortality_count"
+  ],
+  "clinical_status": "UNVALIDATED_DEMONSTRATION_QUESTIONNAIRE"
+}

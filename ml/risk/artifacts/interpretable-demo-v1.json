@@ -1,0 +1,38 @@
+{
+  "calibration_status": "DEMO_UNVALIDATED",
+  "class_weight_policy": "balanced conceptual baseline; no oversampling performed",
+  "dataset": "data\\synthetic_cp2.csv",
+  "dataset_sha256": "60c5f4bc006a1022e80fce58d44bd3275dfd2b5807f45826221a16925b0ab650",
+  "feature_schema_version": "triage-features-v1.0.0",
+  "label_counts": {
+    "EMERGENCY": 7,
+    "LOW": 8,
+    "VET_REVIEW": 9
+  },
+  "leakage_exclusions": [
+    "future_outcome",
+    "lab_result",
+    "verified_label",
+    "vet_review"
+  ],
+  "model_version": "interpretable-risk-demo-1.0.0",
+  "provenance": "24 deterministic synthetic demonstration rows; no clinical claims",
+  "split": {
+    "calibration_groups": [
+      "FARM_E",
+      "FARM_F"
+    ],
+    "test_groups": [
+      "FARM_G",
+      "FARM_H"
+    ],
+    "train_groups": [
+      "FARM_A",
+      "FARM_B",
+      "FARM_C",
+      "FARM_D"
+    ]
+  },
+  "threshold_version": "thresholds-demo-1.0.0",
+  "tree_candidate": "NOT_TRAINED_NO_AUTHORIZED_CLINICAL_DATA"
+}

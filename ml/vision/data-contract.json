@@ -1,0 +1,23 @@
+{
+  "contract_version": "vision-training-v1.0.0",
+  "format": "UTF-8 CSV manifest; image paths are relative to an authorized image root",
+  "required_columns": [
+    "image_path",
+    "subject_group_id",
+    "captured_at",
+    "label",
+    "provenance",
+    "consent_reference"
+  ],
+  "class_order": [
+    "SKIN_LESION",
+    "OCULAR_NASAL_DISCHARGE",
+    "SWELLING",
+    "NORMAL_APPEARANCE",
+    "OTHER_UNKNOWN"
+  ],
+  "allowed_provenance": ["AUTHORIZED_CLINICAL"],
+  "split_policy": "subject-group-disjoint and chronological; duplicate image hashes must remain in one split",
+  "quality_policy": "retain quality metadata and report rejection/subgroup rates; do not train from rejected or unconsented images",
+  "output_contract": "complete class-order probability vector, quality, uncertainty, model version, calibration status"
+}

@@ -1,0 +1,8 @@
+{
+  "version": "thresholds-demo-1.0.0",
+  "provenance": "Unvalidated synthetic demonstration thresholds",
+  "calibration_status": "DEMO_UNVALIDATED",
+  "emergency_probability": 0.35,
+  "vet_review_probability": 0.4,
+  "uncertainty_review": 0.55
+}

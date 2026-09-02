@@ -1,0 +1,14 @@
+{
+  "name": "@sih/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "install:chromium": "playwright install chromium",
+    "test": "playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.0",
+    "typescript": "^5.9.2"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "contract_version": "risk-training-v1.0.0",
+  "format": "UTF-8 CSV with one pre-triage observation per row",
+  "required_columns": [
+    "record_id",
+    "group_id",
+    "event_time",
+    "provenance",
+    "label",
+    "guided_severity",
+    "guided_appetite",
+    "guided_mobility",
+    "guided_respiration",
+    "mortality_count",
+    "missing_count"
+  ],
+  "label_order": ["LOW", "VET_REVIEW", "EMERGENCY"],
+  "allowed_provenance": ["AUTHORIZED_CLINICAL", "SYNTHETIC_DEMO"],
+  "forbidden_features": [
+    "vet_review",
+    "verified_label",
+    "lab_result",
+    "future_outcome",
+    "post_triage_action"
+  ],
+  "split_policy": "group-disjoint; event_time is required and evaluation must preserve temporal ordering",
+  "missing_values": "empty/null means missing; never encode an absent modality as zero",
+  "governance": "authorized clinical provenance and documented consent/retention are required for a deployable model"
+}
