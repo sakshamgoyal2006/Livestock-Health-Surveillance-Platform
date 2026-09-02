@@ -13,12 +13,14 @@ const roleLinks: Record<Role, { href: string; label: string }[]> = {
     { href: "/registry", label: "Animals & herds" },
     { href: "/report/new", label: "New report" },
     { href: "/sync", label: "Sync center" },
+    { href: "/advisories", label: "Advisories" },
   ],
   FIELD_WORKER: [
     { href: "/dashboard", label: "Home" },
     { href: "/registry", label: "Field registry" },
     { href: "/report/new", label: "New report" },
     { href: "/sync", label: "Sync center" },
+    { href: "/advisories", label: "Advisories" },
   ],
   VETERINARIAN: [
     { href: "/dashboard", label: "Home" },
@@ -31,6 +33,7 @@ const roleLinks: Record<Role, { href: string; label: string }[]> = {
   ADMIN: [
     { href: "/dashboard", label: "Home" },
     { href: "/admin", label: "Administration" },
+    { href: "/admin/mlops", label: "Model governance" },
     { href: "/vet/queue", label: "Case audit" },
   ],
 };

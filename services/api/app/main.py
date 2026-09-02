@@ -11,7 +11,19 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import auth, media, registry, reports, system, triage
+from app.api.routes import (
+    advisories,
+    auth,
+    cases,
+    media,
+    mlops,
+    notifications,
+    registry,
+    reports,
+    surveillance,
+    system,
+    triage,
+)
 from app.core.config import get_settings
 from app.core.logging import configure_logging
 
@@ -31,11 +43,11 @@ async def lifespan(app: FastAPI):  # type: ignore[no-untyped-def]
 
 app = FastAPI(
     title=settings.app_name,
-    version="0.2.0",
+    version="0.3.0",
     description=(
-        "Checkpoint 2 livestock-health reporting and multimodal triage API. This is a "
-        "triage support prototype, "
-        "not a diagnostic system. Veterinary verification is required."
+        "Checkpoint 3 livestock-health reporting, human review, privacy-preserving "
+        "surveillance, and verified-only model governance API. This is a decision-support "
+        "prototype, not a diagnostic system or clinically validated deployment."
     ),
     lifespan=lifespan,
 )
@@ -136,3 +148,8 @@ app.include_router(registry.router)
 app.include_router(reports.router)
 app.include_router(media.router)
 app.include_router(triage.router)
+app.include_router(cases.router)
+app.include_router(surveillance.router)
+app.include_router(advisories.router)
+app.include_router(notifications.router)
+app.include_router(mlops.router)

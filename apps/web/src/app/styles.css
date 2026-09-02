@@ -281,6 +281,72 @@ th {
 code {
   overflow-wrap: anywhere;
 }
+pre {
+  max-height: 24rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.78rem;
+}
+.button-link {
+  display: inline-block;
+  margin: 0.5rem 0;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  color: white;
+  background: var(--green);
+  text-decoration: none;
+  font-weight: 700;
+}
+.truth-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin: 1rem 0;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+.truth-strip > div {
+  padding: 1rem;
+  background: white;
+}
+.aggregate-map {
+  min-height: 240px;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e7efe9, #d4e2d8);
+}
+.map-point {
+  min-width: 170px;
+  padding: 1rem;
+  border: 2px solid var(--green);
+  border-radius: 50%;
+  background: white;
+  text-align: center;
+}
+.map-legend {
+  margin-bottom: 1rem;
+}
+.suspected-dot,
+.verified-dot,
+.lab-dot {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-left: 1rem;
+  border-radius: 50%;
+  background: var(--amber);
+}
+.verified-dot {
+  background: var(--green);
+}
+.lab-dot {
+  background: #3556a8;
+}
 
 @media (max-width: 680px) {
   .topbar {
@@ -294,6 +360,9 @@ code {
   }
   .steps {
     font-size: 0.82rem;
+  }
+  .truth-strip {
+    grid-template-columns: 1fr;
   }
 }
 

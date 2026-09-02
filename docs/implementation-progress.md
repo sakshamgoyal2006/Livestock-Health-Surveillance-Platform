@@ -282,3 +282,85 @@ a group-disjoint held-out set of six rows dated 2026-03-01 through 2026-03-12.
 Checkpoint 2 is complete and the repository is **technically safe to continue to
 Checkpoint 3**, provided all outputs remain preliminary demo decision support until
 authorized data, veterinary review, calibration, and clinical validation exist.
+
+# Checkpoint 3 — Stages 9–12
+
+Status: implemented on 2026-09-03. Validation evidence below records only commands that
+actually returned exit code zero. Stage 13 and later hardening were not implemented.
+
+## Operational workflow
+
+- Every completed triage idempotently creates one versioned veterinary case and keeps
+  the original preliminary prediction immutable. Veterinarian evidence includes raw
+  observations, media metadata, NLP/CV quality/uncertainty, rules/models/features,
+  condition and urgency probabilities, explanations, decision trace, nearby PostGIS
+  cases, cached weather, review history, lab history, and follow-ups.
+- The guarded state machine supports assignment, review, confirm/correct/inconclusive,
+  sample request, lab pending/result, follow-up, escalation, and close paths. Expected
+  versions reject stale writes. Suspected, vet-verified, and lab-confirmed truth remains
+  separate in storage, APIs, and the district UI.
+- PostGIS point context stays veterinarian-only. Officer APIs provide rounded or
+  suppressed aggregates. `rolling-baseline-demo-1.0.0` combines a two-day window,
+  14-day baseline, ten-kilometre proximity, minimum count, lift, and verification
+  confidence. Outputs are hotspot candidates only.
+- The chronological seed is explicitly synthetic: Village A/B baseline, Village A Day
+  1 small signal, Village A Day 2 rise plus a nearby Village B report. The browser E2E
+  adds an offline Village B report and verifies the independent map layers after review.
+- Advisory templates are available in English, Marathi, and Hindi. The development
+  outbox implements event/delivery deduplication, retries, rate limiting,
+  acknowledgement, escalation, and `external_send: false` receipts.
+- Only authorized vet/lab records can stage training candidates. Quality review,
+  deduplication, immutable batch manifests, locked-benchmark comparisons, regression
+  rejection, explicit administrator approval, promotion, and rollback are implemented.
+  No unverified prediction is a label and nothing auto-deploys.
+
+## Validation evidence
+
+| Area | Command | Result |
+|---|---|---|
+| Initial CP1–2 regression smoke | isolated PostGIS plus focused integration and offline queue tests | PASS — 8 backend smoke assertions and 5 offline tests |
+| Fresh migration | `alembic upgrade head` from an empty PostGIS volume, then repeated | PASS — revisions 0001–0003; second invocation no-op |
+| Synthetic seed | `python -m scripts.seed`; `python -m scripts.seed_checkpoint3` | PASS — five identities, Village A/B chronology, cached weather, demo model, one hotspot candidate |
+| Backend format/lint/types | `ruff format --check .`; `ruff check .`; `mypy app scripts` | PASS |
+| Backend unit/contracts | `pytest -m "not integration"` | PASS — 51 passed, 28 deselected |
+| PostgreSQL/PostGIS integration regression | `pytest -m integration` | PASS — 28 passed, 51 deselected (20 CP1, 3 CP2, 5 CP3) |
+| Frontend format/lint/types | Prettier, ESLint, web and E2E TypeScript | PASS |
+| Locked synthetic benchmark | `python services/api/scripts/evaluate_checkpoint3_candidate.py` | PASS — reproducible report; metrics below |
+| Frontend unit | `npm --workspace apps/web run test` | PASS — 2 files, 7 tests |
+| Production web build | Docker `next build` | PASS — 13 routes generated, including all CP3 screens |
+| Browser CP1–3 E2E | `npm --workspace tests/e2e run test` | PASS — 2/2 serial stateful scenarios |
+| Full clean command | `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate.ps1` | PASS — completed and removed isolated services/volume |
+
+## Synthetic locked-benchmark report (not clinical performance)
+
+The immutable fixture contains six explicitly synthetic, temporally ordered examples
+from two identity groups. The current deterministic baseline produced 5/6 correct,
+emergency sensitivity 0.5, and multiclass Brier 0.462228. The intentional regression
+fixture produced 2/6 correct, emergency sensitivity 0.0, and Brier 1.293933 and is
+rejected. Calibration status is `DEMO_UNVALIDATED`; these values are reproducibility
+and safety-gate evidence only.
+
+## Checkpoint 3 current acceptance
+
+| Criterion | Status | Evidence/gap |
+|---|---|---|
+| Authorized auditable case state machine | PASS | integration state, stale, role, and timeline assertions |
+| Complete vet evidence and action branches | PASS | API/UI plus corrected, inconclusive, sample/lab, follow-up, escalation tests |
+| Suspected/vet/lab status separation | PASS | schema, case evidence, aggregate counts, and UI layers |
+| Authorized verified-only retraining provenance | PASS | provenance and pseudo-label rejection tests |
+| Immutable original prediction vs ground truth | PASS | immutable reference and evidence assertions |
+| PostGIS point context and privacy aggregates | PASS | proximity/aggregate integration and role denial |
+| Temporal/proximity hotspot candidate detection | PASS | chronological seed plus baseline/minimum/lift/confidence assertions |
+| Optional cached weather | PASS | missing/available adapter paths exposed in vet evidence |
+| Marathi/Hindi/English template advisories | PASS | table-driven contract and farmer-scoped API |
+| Alert outbox lifecycle and no-send adapter | PASS | dedup/retry/rate-limit/ack/escalation/external-send assertions |
+| Lab referral/result authoritative truth | PASS | sample-request, lab-pending, and lab-confirmed integration paths |
+| Verified batch/evaluate/reject/approve/promote/rollback | PASS | database/API lifecycle test and locked report |
+| Clinical or field validation | BLOCKED | no authorized clinical dataset, field study, or reviewed clinical thresholds |
+
+## Checkpoint boundary
+
+Checkpoint 3 is complete and the repository is **technically safe to continue to final
+hardening**, while remaining explicitly unsuitable for field or clinical use. Final
+hardening must not reinterpret the demo rules, advisories, detector, benchmark, or
+probabilities as validated clinical behavior.

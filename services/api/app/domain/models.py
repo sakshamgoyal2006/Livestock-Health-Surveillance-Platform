@@ -362,6 +362,43 @@ class VetReview(Base, TimestampMixin):
     notes: Mapped[str | None] = mapped_column(Text)
 
 
+class VeterinaryCase(Base, TimestampMixin):
+    """Authoritative human-review state, separate from immutable predictions."""
+
+    __tablename__ = "veterinary_cases"
+    id: Mapped[UUID] = uuid_column()
+    health_report_id: Mapped[UUID] = mapped_column(
+        ForeignKey("health_reports.id"), unique=True, index=True
+    )
+    original_risk_assessment_id: Mapped[UUID] = mapped_column(
+        ForeignKey("risk_assessments.id"), unique=True
+    )
+    state: Mapped[str] = mapped_column(String(32), default="TRIAGED", index=True)
+    assigned_veterinarian_user_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id"), index=True
+    )
+    suspected_label: Mapped[str | None] = mapped_column(String(160))
+    suspected_status: Mapped[str] = mapped_column(
+        String(32), default="PRELIMINARY_SUSPECTED", nullable=False
+    )
+    verified_label: Mapped[str | None] = mapped_column(String(160))
+    verified_status: Mapped[str] = mapped_column(String(32), default="PENDING", nullable=False)
+    lab_status: Mapped[str] = mapped_column(String(32), default="NOT_REQUESTED", nullable=False)
+    escalated: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    escalation_level: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+
+
+class CaseFollowUp(Base, TimestampMixin):
+    __tablename__ = "case_follow_ups"
+    id: Mapped[UUID] = uuid_column()
+    veterinary_case_id: Mapped[UUID] = mapped_column(ForeignKey("veterinary_cases.id"), index=True)
+    recorded_by_user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), index=True)
+    follow_up_type: Mapped[str] = mapped_column(String(40), nullable=False)
+    notes: Mapped[str] = mapped_column(Text, nullable=False)
+    due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
 class CaseAssignment(Base, TimestampMixin):
     __tablename__ = "case_assignments"
     id: Mapped[UUID] = uuid_column()
@@ -420,6 +457,13 @@ class AlertEvent(Base, TimestampMixin):
     alert_type: Mapped[str] = mapped_column(String(80))
     status: Mapped[str] = mapped_column(String(32))
     deduplication_key: Mapped[str] = mapped_column(String(180), unique=True)
+    administrative_area_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("administrative_areas.id"), index=True
+    )
+    context: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    escalation_level: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    acknowledged_by_user_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id"))
+    acknowledged_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class NotificationOutbox(Base, TimestampMixin):
@@ -431,6 +475,14 @@ class NotificationOutbox(Base, TimestampMixin):
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB)
     status: Mapped[str] = mapped_column(String(32), default="PENDING")
     attempt_count: Mapped[int] = mapped_column(Integer, default=0)
+    max_attempts: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
+    next_attempt_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error_code: Mapped[str | None] = mapped_column(String(80))
+    delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    delivery_mode: Mapped[str] = mapped_column(
+        String(32), default="DEV_RECORD_ONLY", nullable=False
+    )
+    deduplication_key: Mapped[str | None] = mapped_column(String(220), unique=True)
 
 
 class WeatherSnapshot(Base, TimestampMixin):
@@ -456,6 +508,36 @@ class SurveillanceAggregate(Base, TimestampMixin):
     lab_confirmed_count: Mapped[int] = mapped_column(Integer, default=0)
 
 
+class HotspotCandidate(Base, TimestampMixin):
+    __tablename__ = "hotspot_candidates"
+    id: Mapped[UUID] = uuid_column()
+    candidate_key: Mapped[str] = mapped_column(String(180), unique=True, nullable=False)
+    administrative_area_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("administrative_areas.id"), index=True
+    )
+    area_name: Mapped[str] = mapped_column(String(160), nullable=False, index=True)
+    area_level: Mapped[str] = mapped_column(String(32), nullable=False)
+    centroid: Mapped[Any | None] = mapped_column(Geography("POINT", srid=4326))
+    latitude: Mapped[float | None] = mapped_column(Float)
+    longitude: Mapped[float | None] = mapped_column(Float)
+    window_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    window_end: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    baseline_daily_rate: Mapped[float] = mapped_column(Float, nullable=False)
+    observed_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    suspected_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    vet_verified_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    lab_confirmed_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    detector_version: Mapped[str] = mapped_column(String(80), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), default="CANDIDATE", index=True)
+    acknowledged_by_user_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id"))
+    acknowledged_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reviewer_note: Mapped[str | None] = mapped_column(String(500))
+    __table_args__ = (
+        Index("ix_hotspot_candidates_centroid_gist", "centroid", postgresql_using="gist"),
+    )
+
+
 class DatasetVersion(Base, TimestampMixin):
     __tablename__ = "dataset_versions"
     id: Mapped[UUID] = uuid_column()
@@ -463,6 +545,10 @@ class DatasetVersion(Base, TimestampMixin):
     checksum: Mapped[str] = mapped_column(String(64))
     provenance: Mapped[dict[str, Any]] = mapped_column(JSONB)
     immutable: Mapped[bool] = mapped_column(Boolean, default=True)
+    status: Mapped[str] = mapped_column(String(32), default="LOCKED", nullable=False)
+    row_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    feature_schema_version: Mapped[str | None] = mapped_column(String(40))
+    locked_benchmark_checksum: Mapped[str | None] = mapped_column(String(64))
 
 
 class RetrainingCandidate(Base, TimestampMixin):
@@ -473,6 +559,13 @@ class RetrainingCandidate(Base, TimestampMixin):
     verified_label: Mapped[str] = mapped_column(String(160))
     status: Mapped[str] = mapped_column(String(32), default="STAGED")
     dataset_version_id: Mapped[UUID | None] = mapped_column(ForeignKey("dataset_versions.id"))
+    source_record_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
+    provenance: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    quality_review_status: Mapped[str] = mapped_column(
+        String(32), default="PENDING", nullable=False
+    )
+    deduplication_hash: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    immutable_checksum: Mapped[str] = mapped_column(String(64), nullable=False)
 
 
 class PromotionApproval(Base, TimestampMixin):

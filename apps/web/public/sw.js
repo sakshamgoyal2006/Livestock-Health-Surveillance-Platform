@@ -1,4 +1,4 @@
-const CACHE = "sih-shell-cp1-v1";
+const CACHE = "sih-shell-cp3-v1";
 const SHELL = ["/", "/login", "/dashboard", "/report/new", "/sync", "/questionnaire.v1.json", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -27,4 +27,3 @@ self.addEventListener("fetch", (event) => {
       .catch(() => caches.match(event.request).then((cached) => cached || caches.match("/dashboard"))),
   );
 });
-

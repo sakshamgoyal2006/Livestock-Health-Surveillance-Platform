@@ -1,0 +1,21 @@
+{
+  "version": "advisories-demo-1.0.0",
+  "review_status": "DEMO_UNVALIDATED",
+  "templates": {
+    "LOW": {
+      "en": "Continue close observation and contact a veterinarian if signs worsen. This is preliminary guidance, not a diagnosis.",
+      "mr": "जवळून निरीक्षण सुरू ठेवा आणि लक्षणे वाढल्यास पशुवैद्यकाशी संपर्क करा. हे प्राथमिक मार्गदर्शन आहे, निदान नाही.",
+      "hi": "करीबी निगरानी जारी रखें और लक्षण बढ़ने पर पशु चिकित्सक से संपर्क करें। यह प्रारंभिक मार्गदर्शन है, निदान नहीं।"
+    },
+    "VET_REVIEW": {
+      "en": "Keep the animal separate where safely possible and contact a veterinarian promptly. Do not start treatment from this message alone.",
+      "mr": "सुरक्षित असल्यास जनावर वेगळे ठेवा आणि लवकर पशुवैद्यकाशी संपर्क करा. केवळ या संदेशावरून उपचार सुरू करू नका.",
+      "hi": "सुरक्षित हो तो पशु को अलग रखें और शीघ्र पशु चिकित्सक से संपर्क करें। केवल इस संदेश के आधार पर उपचार शुरू न करें।"
+    },
+    "EMERGENCY": {
+      "en": "Seek urgent veterinary help. Keep the animal safely separated and use the locally approved emergency contact. This is not a confirmed diagnosis.",
+      "mr": "तातडीची पशुवैद्यकीय मदत घ्या. जनावर सुरक्षितपणे वेगळे ठेवा आणि स्थानिक मान्य आपत्कालीन संपर्क वापरा. हे निश्चित निदान नाही.",
+      "hi": "तत्काल पशु चिकित्सा सहायता लें। पशु को सुरक्षित रूप से अलग रखें और स्थानीय स्वीकृत आपात संपर्क का उपयोग करें। यह पुष्ट निदान नहीं है।"
+    }
+  }
+}

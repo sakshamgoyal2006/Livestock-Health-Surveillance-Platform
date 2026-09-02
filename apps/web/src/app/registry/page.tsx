@@ -84,8 +84,10 @@ export default function RegistryPage() {
     setFarmName("");
     setVillage("");
     setMessage(`Farm “${farm.name}” created.`);
-    setSelectedFarm(farm.id);
     await refresh();
+    // refresh() closes over the prior selection, so apply the newly created farm
+    // after it completes to avoid registering a subject against an older farm.
+    setSelectedFarm(farm.id);
   }
 
   async function addAnimal(event: FormEvent) {

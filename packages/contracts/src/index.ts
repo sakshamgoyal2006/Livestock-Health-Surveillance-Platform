@@ -90,3 +90,32 @@ export interface TriageDecision {
   modality_status: Record<string, string>;
   clinical_notice: string;
 }
+
+export type VeterinaryCaseState =
+  | "TRIAGED"
+  | "ASSIGNED"
+  | "UNDER_REVIEW"
+  | "VET_VERIFIED"
+  | "INCONCLUSIVE"
+  | "SAMPLE_REQUESTED"
+  | "LAB_PENDING"
+  | "LAB_CONFIRMED"
+  | "LAB_NEGATIVE"
+  | "CLOSED";
+
+export interface VeterinaryTruthStatus {
+  suspected_status: "PRELIMINARY_SUSPECTED";
+  verified_status: "PENDING" | "VET_VERIFIED" | "INCONCLUSIVE" | "LAB_CONFIRMED";
+  lab_status: "NOT_REQUESTED" | "REQUESTED" | "CONFIRMED" | "NEGATIVE" | "INCONCLUSIVE";
+}
+
+export interface SurveillanceAggregate {
+  area_name: string;
+  area_level: "VILLAGE" | "BLOCK" | "DISTRICT";
+  suspected_count: number;
+  vet_verified_count: number;
+  lab_confirmed_count: number;
+  coordinates_suppressed: boolean;
+  latitude: number | null;
+  longitude: number | null;
+}

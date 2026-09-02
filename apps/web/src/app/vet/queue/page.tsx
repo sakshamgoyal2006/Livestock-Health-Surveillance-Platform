@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 
 import { AppShell } from "@/components/AppShell";
 import { apiFetch } from "@/lib/api";
@@ -16,6 +17,14 @@ type VetReport = {
   status: string;
   optional_provider_status: Record<string, string>;
   risk_assessment: TriageDecision | null;
+  case: {
+    id: string;
+    state: string;
+    version: number;
+    suspected_status: string;
+    verified_status: string;
+    lab_status: string;
+  } | null;
 };
 
 type TriageDecision = {
@@ -67,8 +76,8 @@ export default function VetQueuePage() {
       <h1>Preliminary triage queue</h1>
       <p className="notice">
         Suspected patterns and urgency are decision support, not confirmed
-        diagnoses. Veterinary verification is required. Review actions begin in
-        a later checkpoint.
+        diagnoses. Veterinary verification is required and the original
+        prediction remains immutable after review.
       </p>
       <button className="secondary" onClick={() => void load()}>
         Refresh queue
@@ -96,6 +105,21 @@ export default function VetQueuePage() {
                 <td>
                   <code>{report.id}</code>
                   <div>{report.status.replaceAll("_", " ")}</div>
+                  {report.case && (
+                    <Link
+                      className="button-link"
+                      href={`/vet/cases/${report.case.id}`}
+                    >
+                      Review case
+                    </Link>
+                  )}
+                  {report.case && (
+                    <small>
+                      Suspected: {report.case.suspected_status} · Verified:{" "}
+                      {report.case.verified_status} · Lab:{" "}
+                      {report.case.lab_status}
+                    </small>
+                  )}
                 </td>
                 <td data-testid={`triage-${report.id}`}>
                   {report.risk_assessment ? (

@@ -43,7 +43,7 @@ function Invoke-Checked {
 
 $ValidationPassed = $false
 try {
-    Write-Host "Starting isolated clean Checkpoint 2 database..."
+    Write-Host "Starting isolated clean Checkpoint 3 database..."
     Invoke-Checked { docker compose --project-name $ValidationProject down --volumes --remove-orphans }
     Invoke-Checked { docker compose --project-name $ValidationProject build }
     Invoke-Checked { docker compose --project-name $ValidationProject up -d db }
@@ -51,6 +51,8 @@ try {
     Invoke-Checked { docker compose --project-name $ValidationProject run --rm api alembic upgrade head }
     Invoke-Checked { docker compose --project-name $ValidationProject run --rm api python -m scripts.seed }
     Invoke-Checked { docker compose --project-name $ValidationProject run --rm api python -m scripts.seed }
+    Invoke-Checked { docker compose --project-name $ValidationProject run --rm api python -m scripts.seed_checkpoint3 }
+    Invoke-Checked { docker compose --project-name $ValidationProject run --rm api python -m scripts.seed_checkpoint3 }
 
     Write-Host "Running backend format, lint, types, unit, and integration suites..."
     Invoke-Checked { docker compose --project-name $ValidationProject run --rm api ruff format --check . }
@@ -64,6 +66,8 @@ try {
     Invoke-Checked { & $Python -m ruff check ml }
     Invoke-Checked { & $Python ml\risk\train_demo.py }
     Invoke-Checked { & $Python ml\risk\evaluate_demo.py }
+    $env:PYTHONPATH = Join-Path $RepositoryRoot "services\api"
+    Invoke-Checked { & $Python services\api\scripts\evaluate_checkpoint3_candidate.py }
 
     Write-Host "Running frontend format, lint, types, and unit suites..."
     Invoke-Checked { & $Npm ci }
@@ -73,7 +77,7 @@ try {
     Invoke-Checked { & $Npm --workspace tests/e2e run typecheck }
     Invoke-Checked { & $Npm --workspace apps/web run test }
 
-    Write-Host "Running Checkpoint 1 regression plus Checkpoint 2 triage browser test..."
+    Write-Host "Running Checkpoint 1-3 browser regression and operations tests..."
     Invoke-Checked { docker compose --project-name $ValidationProject up -d api web }
     Invoke-Checked { & $Npm --workspace tests/e2e run install:chromium }
     Invoke-Checked { & $Npm --workspace tests/e2e run test }
@@ -89,5 +93,5 @@ finally {
 }
 
 if ($ValidationPassed) {
-    Write-Host "Checkpoint 2 validation completed successfully."
+    Write-Host "Checkpoint 3 validation completed successfully."
 }

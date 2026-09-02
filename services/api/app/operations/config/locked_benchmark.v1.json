@@ -1,0 +1,13 @@
+{
+  "version": "synthetic-locked-benchmark-1.0.0",
+  "provenance": "SYNTHETIC_DEMO",
+  "warning": "Not clinical data or clinical performance",
+  "rows": [
+    {"group": "FARM_G", "severity_score": 0, "respiration_flag": 0, "mobility_flag": 0, "mortality_count": 0, "appetite_loss": 0, "vaccination_unknown": 0, "missing_count": 1, "label": "LOW"},
+    {"group": "FARM_G", "severity_score": 1, "respiration_flag": 0, "mobility_flag": 0, "mortality_count": 0, "appetite_loss": 1, "vaccination_unknown": 1, "missing_count": 3, "label": "VET_REVIEW"},
+    {"group": "FARM_G", "severity_score": 2, "respiration_flag": 1, "mobility_flag": 0, "mortality_count": 0, "appetite_loss": 1, "vaccination_unknown": 0, "missing_count": 2, "label": "EMERGENCY"},
+    {"group": "FARM_H", "severity_score": 0, "respiration_flag": 0, "mobility_flag": 0, "mortality_count": 0, "appetite_loss": 0, "vaccination_unknown": 0, "missing_count": 2, "label": "LOW"},
+    {"group": "FARM_H", "severity_score": 1, "respiration_flag": 0, "mobility_flag": 1, "mortality_count": 0, "appetite_loss": 1, "vaccination_unknown": 0, "missing_count": 2, "label": "VET_REVIEW"},
+    {"group": "FARM_H", "severity_score": 1, "respiration_flag": 0, "mobility_flag": 0, "mortality_count": 1, "appetite_loss": 1, "vaccination_unknown": 1, "missing_count": 3, "label": "EMERGENCY"}
+  ]
+}

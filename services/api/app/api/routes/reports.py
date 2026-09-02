@@ -9,7 +9,7 @@ from sqlalchemy import func, select
 
 from app.api.deps import SessionDep, require_roles
 from app.domain.access import ActorIdentity, can_read_report
-from app.domain.models import AuditLog, HealthReport, StatusHistory, User
+from app.domain.models import AuditLog, HealthReport, StatusHistory, User, VeterinaryCase
 from app.domain.sync import process_mutation
 from app.schemas.common import SyncBatchResponse, SyncMutationResult
 from app.schemas.reports import (
@@ -134,11 +134,19 @@ async def vet_cases(
             status_code=422,
             detail={"code": "INVALID_PAGE", "message": "Invalid pagination values"},
         )
-    base = select(HealthReport).where(HealthReport.status == "QUEUED_FOR_VET")
+    open_states = [
+        "TRIAGED",
+        "ASSIGNED",
+        "UNDER_REVIEW",
+        "SAMPLE_REQUESTED",
+        "LAB_PENDING",
+        "VET_VERIFIED",
+        "LAB_NEGATIVE",
+        "INCONCLUSIVE",
+    ]
+    base = select(HealthReport).where(HealthReport.status.in_(open_states))
     total = await session.scalar(
-        select(func.count())
-        .select_from(HealthReport)
-        .where(HealthReport.status == "QUEUED_FOR_VET")
+        select(func.count()).select_from(HealthReport).where(HealthReport.status.in_(open_states))
     )
     reports = (
         await session.scalars(
@@ -152,6 +160,21 @@ async def vet_cases(
         item = ReportOut.model_validate(report).model_dump(mode="json")
         decision = await latest_decision(session, report.id)
         item["risk_assessment"] = decision.model_dump(mode="json") if decision else None
+        case = await session.scalar(
+            select(VeterinaryCase).where(VeterinaryCase.health_report_id == report.id)
+        )
+        item["case"] = (
+            {
+                "id": str(case.id),
+                "state": case.state,
+                "version": case.version,
+                "suspected_status": case.suspected_status,
+                "verified_status": case.verified_status,
+                "lab_status": case.lab_status,
+            }
+            if case
+            else None
+        )
         items.append(item)
     return {
         "items": items,

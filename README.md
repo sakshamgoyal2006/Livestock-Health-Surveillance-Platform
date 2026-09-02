@@ -1,6 +1,6 @@
-# SIH 26128 Livestock Health Surveillance — Checkpoint 2
+# SIH 26128 Livestock Health Surveillance — Checkpoint 3
 
-This repository contains the Stage 0–8 vertical slice for a cattle and
+This repository contains the Stage 0–12 vertical slice for a cattle and
 buffalo health-reporting PWA. It is an early-warning and veterinary triage support
 prototype, **not a diagnostic system**. Any offline red-flag message is explicitly
 unvalidated demonstration logic and veterinary verification is required.
@@ -20,9 +20,15 @@ unvalidated demonstration logic and veterinary verification is required.
 - Retryable, input-fingerprinted triage jobs with versioned demo rules, multilingual
   NLP/speech boundaries, image quality and probability-vector processing, explicit
   missingness fusion, preliminary urgency, uncertainty, and explanations.
-- A role-protected veterinarian queue showing synchronized reports and careful
-  preliminary triage evidence. Veterinary verification actions, GIS alerts, and
-  MLOps remain outside this checkpoint.
+- A role-protected veterinarian case workflow with optimistic state transitions,
+  immutable original predictions, correction/inconclusive/follow-up/escalation actions,
+  and lab referral/result branches.
+- PostGIS nearby context plus privacy-preserving village/block/district aggregates and
+  a temporal/proximity hotspot-candidate detector that never calls density an outbreak.
+- English, Marathi, and Hindi demo advisory templates and a retryable/deduplicated alert
+  outbox whose development adapter never sends to real recipients.
+- Verified-only retraining staging, immutable synthetic-demo datasets, locked benchmark
+  evaluation, regression rejection, manual promotion approval, and rollback.
 
 ## Prerequisites
 
@@ -42,9 +48,9 @@ Open <http://localhost:3000>. API documentation is at
 <http://localhost:8000/docs>, liveness at <http://localhost:8000/health>, and
 PostGIS-aware readiness at <http://localhost:8000/ready>.
 
-The API container applies migrations and idempotently loads clearly labelled
-synthetic development identities on startup. Example identities are shown on the
-login screen; the password is `dev-only`.
+The API container applies migrations and idempotently loads clearly labelled synthetic
+development identities and the Village A/B chronological surveillance demonstration.
+Example identities are shown on the login screen; the password is `dev-only`.
 
 ## Explicit database commands
 
@@ -52,6 +58,7 @@ login screen; the password is `dev-only`.
 docker compose up -d db
 docker compose run --rm api alembic upgrade head
 docker compose run --rm api python -m scripts.seed
+docker compose run --rm api python -m scripts.seed_checkpoint3
 docker compose run --rm api alembic downgrade base
 ```
 
@@ -69,6 +76,7 @@ python -m pip install -e ".[dev]"
 $env:DATABASE_URL="postgresql+asyncpg://sih:change-me-development-only@localhost:5432/sih"
 alembic upgrade head
 python -m scripts.seed
+python -m scripts.seed_checkpoint3
 uvicorn app.main:app --reload
 ```
 
@@ -115,12 +123,13 @@ npm --workspace tests/e2e run install:chromium
 npm --workspace tests/e2e run test
 .\.tools\python312\python.exe ml\risk\train_demo.py
 .\.tools\python312\python.exe ml\risk\evaluate_demo.py
+$env:PYTHONPATH="services/api"
+.\.tools\python312\python.exe services\api\scripts\evaluate_checkpoint3_candidate.py
 ```
 
-The Playwright checkpoint test logs in, creates a farm and animal, disables browser
-connectivity, submits two reports, restores connectivity, replays the same sync batch,
-verifies the veterinarian queue contains exactly those two reports once each, and
-checks rule-overridden urgency, versions, and diagnostic-safety wording in the UI.
+The Playwright suite preserves the two-report exactly-once regression scenario and adds
+an offline Village B report that synchronizes, enters the veterinary state machine, is
+corrected by a veterinarian, and updates the separate suspected/verified/lab GIS layers.
 
 ## Development identity boundary
 
@@ -133,7 +142,7 @@ only seeded email/role pairs and the fixed local password. Tokens are signed usi
 - `apps/web`: Next.js PWA, IndexedDB sync/media queue, and multilingual guided labels.
 - `services/api`: FastAPI modular monolith, Alembic, PostGIS models, and tests.
 - `packages/contracts`: shared TypeScript API and mutation contracts.
-- `tests/e2e`: Playwright offline/exactly-once checkpoint test.
+- `tests/e2e`: Playwright offline/exactly-once and Checkpoint 3 operations tests.
 - `ml`: deterministic demo evaluation plus governed real-training contracts/scripts.
 - `docs`: decisions, architecture, privacy/safety, pipeline contracts, acceptance
   traceability, and implementation evidence.

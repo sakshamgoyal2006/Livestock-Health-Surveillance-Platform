@@ -23,6 +23,8 @@ from app.domain.models import (
     VaccinationRecord,
     WeatherSnapshot,
 )
+from app.operations.cases import create_case_from_triage
+from app.operations.surveillance import refresh_hotspot_candidates
 from app.triage.contracts import TriageDecision, TriageJobResult, VisionPrediction
 from app.triage.features import ContextFeatures, build_features
 from app.triage.nlp import DeterministicNLPAdapter, TranscriptEntrySpeechAdapter
@@ -388,6 +390,16 @@ async def run_triage_job(
                 "preliminary": True,
             },
         )
+        if actor_user_id is None:
+            raise ValueError("TRIAGE_ACTOR_REQUIRED")
+        await create_case_from_triage(
+            session,
+            report=report,
+            assessment=assessment,
+            actor_user_id=actor_user_id,
+            request_id=request_id,
+        )
+        await refresh_hotspot_candidates(session)
         await session.commit()
         return TriageJobResult(
             job_id=job.id,
